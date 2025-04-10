@@ -1,25 +1,58 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>Live Selling</title>
+    <meta charset="UTF-8" />
+    <title>100ms Live Selling</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/@100mslive/roomkit-web@latest"></script>
-    <style>html, body { margin: 0; padding: 0; height: 100%; }</style>
+    <style>
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background: #000;
+      }
+    </style>
   </head>
   <body>
-    <div id="root" style="height: 100vh;"></div>
+    <div id="root"></div>
     <script>
-      window.HMSRoomKit.mount({
-        delegate: {
-          onLeave: () => console.log("Left the room"),
-        },
-        config: {
-          userName: "Seller", // Your app's username
-          authToken: "YOUR_TEMP_TOKEN", // Replace with 100ms token
-          settings: {
-            autoJoin: true
-          }
-        },
-        appRoot: document.getElementById("root"),
+      const managementToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE3NDQyOTAyODMsImV4cCI6MTc0NDg5NTA4MywianRpIjoiMWRmZjM4YTktMmU3ZC00ZDVkLTgyYjEtZDE4MGE0OTFlYTZhIiwidHlwZSI6Im1hbmFnZW1lbnQiLCJ2ZXJzaW9uIjoyLCJuYmYiOjE3NDQyOTAyODMsImFjY2Vzc19rZXkiOiI2N2Y3M2YyODQ5NDRmMDY3MzEzYTk1YjAifQ.YtSc3WP2xkYgzkYoUB5au9Ov-GW_kg3jmhx2vozqu30";
+      const roomId = "67f73f8f02936b386a840ece";
+      const userId = "livestreamer_" + Date.now();
+
+      async function getToken() {
+        const response = await fetch("https://api.100ms.live/v2/room-tokens", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${managementToken}`,
+          },
+          body: JSON.stringify({
+            user_id: userId,
+            role: "host", // use "viewer" if for customers
+            room_id: roomId,
+          }),
+        });
+
+        const data = await response.json();
+        return data.token;
+      }
+
+      getToken().then((authToken) => {
+        window.HMSRoomKit.mount({
+          config: {
+            userName: "Live Seller",
+            authToken,
+            settings: { autoJoin: true },
+          },
+          appRoot: document.getElementById("root"),
+          delegate: {
+            onLeave: () => {
+              console.log("Left room");
+            },
+          },
+        });
       });
     </script>
   </body>
