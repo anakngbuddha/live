@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Live Selling</title>
+    <script src="https://unpkg.com/@100mslive/roomkit-web@latest"></script>
+    <style>html, body { margin: 0; padding: 0; height: 100%; }</style>
+  </head>
+  <body>
+    <div id="root" style="height: 100vh;"></div>
+    <script>
+      window.HMSRoomKit.mount({
+        delegate: {
+          onLeave: () => console.log("Left the room"),
+        },
+        config: {
+          userName: "Seller", // Your app's username
+          authToken: "YOUR_TEMP_TOKEN", // Replace with 100ms token
+          settings: {
+            autoJoin: true
+          }
+        },
+        appRoot: document.getElementById("root"),
+      });
+    </script>
+  </body>
+</html>
